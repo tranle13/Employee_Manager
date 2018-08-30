@@ -1,6 +1,12 @@
+
+	// Name: Tran Le
+	// JAV2 - 1809
+	// File name: PrefActivity.java
+
 package com.sunny.android.letran_ce02;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -17,17 +23,10 @@ public class PrefActivity extends AppCompatActivity {
 		getFragmentManager().beginTransaction().replace(R.id.prefFragmentHolder,
 				new PrefFragment()).commit();
 	}
-//
-//
-//	@Override
-//	public void onBuildHeaders(List<Header> target) {
-//		super.onBuildHeaders(target);
-//		loadHeadersFromResource(R.xml.preference_headers, target);
-//	}
-//
-//	@Override
-//	protected boolean isValidFragment(String fragmentName) {
-//		return PrefFragment.class.getName().equals(fragmentName);
-//	}
 
+	@Override
+	public void onBackPressed() {
+		setResult(RESULT_OK);
+		super.onBackPressed();
+	}
 }

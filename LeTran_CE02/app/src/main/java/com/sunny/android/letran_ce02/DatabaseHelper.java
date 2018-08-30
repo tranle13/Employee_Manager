@@ -12,6 +12,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 	public class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static final String TAG = "DatabaseHelper";
@@ -85,7 +87,7 @@ import android.util.Log;
 
 	// Function to get the chosen employee data from table
 	public Cursor getChosenData(int _id) {
-		String where = "_id = '" + _id + "'";
+		String where = "_id = " + _id + "";
 		return eDB.query(TABLE_NAME, null, where, null, null,
 				null, null);
 	}
@@ -112,5 +114,43 @@ import android.util.Log;
 		changedContent.put(COLUMN_STATUS, status);
 
 		eDB.update(TABLE_NAME, changedContent, where, null);
+	}
+
+	// Function to get all the id from table
+	public ArrayList<Integer> getAllId() {
+		Cursor c = getAllData();
+		ArrayList<Integer> ids = new ArrayList<>();
+
+		try {
+			while (c.moveToNext()) {
+				ids.add(c.getInt(c.getColumnIndex(COLUMN_ID)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ids;
+	}
+
+	public void sortStatus(int which) {
+		switch (which) {
+			case 0:
+				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_STATUS+" ASC");
+				break;
+			default:
+				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_STATUS+" DESC");
+				break;
+		}
+	}
+
+	public void sortNumber(int which) {
+		switch (which) {
+			case 0:
+				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_NUMBER+" ASC");
+				break;
+			default:
+				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_NUMBER+" DESC");
+				break;
+		}
 	}
 }

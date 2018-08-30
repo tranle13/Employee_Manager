@@ -26,10 +26,12 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sunny.android.letran_ce02.DatabaseHelper;
 import com.sunny.android.letran_ce02.MainActivity;
 import com.sunny.android.letran_ce02.R;
+import com.sunny.android.letran_ce02.interfaces.DismissActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,18 +44,24 @@ import java.util.Locale;
 public class ChangeFragment extends Fragment implements View.OnClickListener {
 
 	private static final String TAG = "ChangeFragment";
-	private static final String DATE_FORMAT_1 = "MM/dd/yyyy";
-	private static final String DATE_FORMAT_2 = "MMMM dd, yyyy";
-	private static final String DATE_FORMAT_3 = "MM. dd. yyyy";
+
+	private static final String DEFAULT_DATE_FORMAT = "MMMM dd, yyyy";
+	private static final String KEY_FOR_ID = "FOR_ID";
+	private Date hireDate;
+	private DismissActivity dismissListener;
 
 	public ChangeFragment() {
 		// Default empty constructor
 	}
 
 	// Function to create new instance of fragment
-	public static ChangeFragment newInstance() {
+	public static ChangeFragment newInstance(Integer id) {
 
 		Bundle args = new Bundle();
+
+		if (id != null) {
+			args.putInt(KEY_FOR_ID, id);
+		}
 
 		ChangeFragment fragment = new ChangeFragment();
 		fragment.setArguments(args);
@@ -65,6 +73,14 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if (context instanceof DismissActivity) {
+			dismissListener = (DismissActivity)context;
+		}
 	}
 
 	// Function to assign the layout file to fragment java file
@@ -80,9 +96,20 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 		super.onActivityCreated(savedInstanceState);
 
 		if (getView() != null) {
-			Button pickDate = (Button)getView().findViewById(R.id.btn_Date);
+			Button pickDate = (Button) getView().findViewById(R.id.btn_Date);
 			pickDate.setOnClickListener(this);
+
+			if (getArguments() != null) {
+				EditText firstName = (EditText)getView().findViewById(R.id.etx_FirstName);
+				EditText lastName = (EditText)getView().findViewById(R.id.etx_LastName);
+				EditText number = (EditText)getView().findViewById(R.id.etx_Number);
+				EditText status = (EditText)getView().findViewById(R.id.etx_Status);
+				TextView hireDate = (TextView)getView().findViewById(R.id.txt_Change_Date);
+
+
+			}
 		}
+
 	}
 
 	// Function to add menu to action bar in fragment
@@ -102,17 +129,28 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 					EditText lastName = (EditText)getView().findViewById(R.id.etx_LastName);
 					EditText number = (EditText)getView().findViewById(R.id.etx_Number);
 					EditText status = (EditText)getView().findViewById(R.id.etx_Status);
-					TextView date = (TextView)getView().findViewById(R.id.txt_Change_Date);
+
 					try {
 						int intNumber = Integer.parseInt(number.getText().toString());
 						DatabaseHelper helper = DatabaseHelper.getInstance(getContext());
-						helper.insertNewEmployee(firstName.getText().toString(), lastName.getText().toString(),
-								intNumber, status.getText().toString(), date.getText().toString());
+
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+						if (hireDate != null) {
+							String theDate = df.format(hireDate);
+							helper.insertNewEmployee(firstName.getText().toString(), lastName.getText().toString(),
+									intNumber, theDate, status.getText().toString());
+						}
+
+						dismissListener.dismissView();
+
+						if (getArguments() != null) {
+							Toast.makeText(getActivity(), "Employee updated", Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(getActivity(), "Employee added", Toast.LENGTH_SHORT).show();
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-
-
 				}
 				break;
 		}
@@ -138,19 +176,23 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 	DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 		@Override
 		public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-			if (getView() != null) {
-				TextView date = (TextView)getView().findViewById(R.id.txt_Change_Date);
-				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-				String dateFormat = pref.getString(PrefFragment.KEY_DISPLAY, "");
+		if (getView() != null) {
+			TextView date = (TextView)getView().findViewById(R.id.txt_Change_Date);
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+			String dateFormat = pref.getString(PrefFragment.KEY_DISPLAY, DEFAULT_DATE_FORMAT);
 
-				Calendar newCalendar = Calendar.getInstance();
-				newCalendar.set(year, month, dayOfMonth);
+			Log.i(TAG, "onDateSet: "+dateFormat);
 
-				Date newDate = newCalendar.getTime();
-				DateFormat df = new SimpleDateFormat(dateFormat, Locale.US);
-				String theDate = df.format(newDate);
+			Calendar newCalendar = Calendar.getInstance();
+			newCalendar.set(year, month, dayOfMonth);
+
+			hireDate = newCalendar.getTime();
+			DateFormat df = new SimpleDateFormat(dateFormat, Locale.US);
+			if (hireDate != null) {
+				String theDate = df.format(hireDate);
 				date.setText(theDate);
 			}
+		}
 		}
 	};
 
