@@ -96,6 +96,11 @@ import android.util.Log;
 		eDB.delete(TABLE_NAME, where, null);
 	}
 
+	// Function to delete all employees
+	public void deleteAll() {
+		eDB.delete(TABLE_NAME, null, null);
+	}
+
 	// Function to update the chosen employee
 	public void updateEmployee(int _id, String firstName, String lastName, int number, String date, String status) {
 		String where = "_id = '" + _id + "'";

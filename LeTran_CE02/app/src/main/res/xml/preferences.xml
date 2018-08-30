@@ -23,8 +23,7 @@
             android:title="@string/data_subtitle"
             android:summary="@string/data_details"
             android:entries="@array/pref_date_format"
-            android:entryValues="@array/pref_date_format_values"
-            android:defaultValue="@string/default_date_format"/>
+            android:entryValues="@array/pref_date_format_values"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -5,6 +5,7 @@
 
 package com.sunny.android.letran_ce02;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements ListViewFragment.
 	private DatabaseHelper helper;
 	private static final String TAG = "MainActivity";
 	private static final int REQUEST_NEW_EMPLOYEE = 1;
+	public final Context appContext = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

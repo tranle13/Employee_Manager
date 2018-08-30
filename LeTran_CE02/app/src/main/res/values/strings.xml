@@ -40,4 +40,8 @@
     <string name="data_title">Data Management</string>
     <string name="data_subtitle">Delete All</string>
     <string name="data_details">Remove all saved employees from device.</string>
+
+    <string name="dialog_message">Are you sure you want to delete all stored employees from the device?</string>
+    <string name="dialog_neg_button">Cancel</string>
+
 </resources>
