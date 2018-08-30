@@ -3,4 +3,41 @@
 
     <string name="imageView">Image Holder</string>
     <string name="empty_state">There are no employees here but here is a pair of glasses for now</string>
+
+    <string-array name="sort_factor">
+        <item>Sort by Status</item>
+        <item>Sort by Number</item>
+    </string-array>
+
+    <string-array name="sort_way">
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
+
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_number">Employee Number</string>
+    <string name="hint_status">Employee Status</string>
+    <string name="hire_title">Hire Date</string>
+    <string name="hint_hire">Select a Date</string>
+
+    <string-array name="pref_date_format">
+        <item>01/01/2017</item>
+        <item>January 1, 2017</item>
+        <item>01.01.2017</item>
+    </string-array>
+
+    <string-array name="pref_date_format_values">
+        <item>MM/dd/yyyy</item>
+        <item>MMMM dd, yyyy</item>
+        <item>MM. dd. yyyy</item>
+    </string-array>
+
+    <string name="display_title">Display Reference</string>
+    <string name="display_subtitle">Date Format</string>
+    <string name="display_details">Changes we display format for an employee\'s hire date.</string>
+
+    <string name="data_title">Data Management</string>
+    <string name="data_subtitle">Delete All</string>
+    <string name="data_details">Remove all saved employees from device.</string>
 </resources>

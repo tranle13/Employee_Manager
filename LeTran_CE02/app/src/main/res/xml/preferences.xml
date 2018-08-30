@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/display_title">
+
+        <ListPreference
+            android:key="pref_display"
+            android:title="@string/display_title"
+            android:summary="@string/display_details"
+            android:dialogTitle="@string/display_subtitle"
+            android:entries="@array/pref_date_format"
+            android:entryValues="@array/pref_date_format_values"
+            android:defaultValue="MMMM dd, yyyy"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/data_title">
+
+        <Preference
+            android:key="pref_data"
+            android:title="@string/data_subtitle"
+            android:summary="@string/data_details"
+            android:entries="@array/pref_date_format"
+            android:entryValues="@array/pref_date_format_values"
+            android:defaultValue="@string/default_date_format"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>
