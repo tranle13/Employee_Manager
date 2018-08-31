@@ -8,13 +8,10 @@ package com.sunny.android.letran_ce02;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.ResourceCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 public class EmployeeAdapter extends ResourceCursorAdapter {
-
-	private static final String TAG = "EmployeeAdapter";
 
 	// Constructor
 	public EmployeeAdapter(Context _context, Cursor _cursor) {

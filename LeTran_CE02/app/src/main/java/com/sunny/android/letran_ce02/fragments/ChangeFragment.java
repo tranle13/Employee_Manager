@@ -8,14 +8,12 @@ package com.sunny.android.letran_ce02.fragments;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sunny.android.letran_ce02.DatabaseHelper;
-import com.sunny.android.letran_ce02.MainActivity;
 import com.sunny.android.letran_ce02.R;
 import com.sunny.android.letran_ce02.interfaces.DismissActivity;
 
@@ -37,18 +34,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
-
 
 public class ChangeFragment extends Fragment implements View.OnClickListener {
 
-	private static final String TAG = "ChangeFragment";
-
+	// Member variables
 	private static final String DEFAULT_DATE_FORMAT = "MMMM dd, yyyy";
 	private static final String KEY_FOR_ID = "FOR_ID";
 	private Date hireDate;
 	private DismissActivity dismissListener;
+	private Integer id;
 
 	public ChangeFragment() {
 		// Default empty constructor
@@ -58,10 +53,7 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 	public static ChangeFragment newInstance(Integer id) {
 
 		Bundle args = new Bundle();
-
-		if (id != null) {
-			args.putInt(KEY_FOR_ID, id);
-		}
+		args.putInt(KEY_FOR_ID, id);
 
 		ChangeFragment fragment = new ChangeFragment();
 		fragment.setArguments(args);
@@ -75,6 +67,7 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 		setHasOptionsMenu(true);
 	}
 
+	// Check if activity implements interface
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
@@ -90,7 +83,7 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 		return inflater.inflate(R.layout.change_fragment, container,false);
 	}
 
-	// Function
+	// Function to populate data if there is an _id
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -99,17 +92,44 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 			Button pickDate = (Button) getView().findViewById(R.id.btn_Date);
 			pickDate.setOnClickListener(this);
 
-			if (getArguments() != null) {
+			id = getArguments().getInt(KEY_FOR_ID);
+
+			if (id != -1) {
 				EditText firstName = (EditText)getView().findViewById(R.id.etx_FirstName);
 				EditText lastName = (EditText)getView().findViewById(R.id.etx_LastName);
 				EditText number = (EditText)getView().findViewById(R.id.etx_Number);
 				EditText status = (EditText)getView().findViewById(R.id.etx_Status);
-				TextView hireDate = (TextView)getView().findViewById(R.id.txt_Change_Date);
+				TextView hireDateText = (TextView)getView().findViewById(R.id.txt_Change_Date);
 
+				DatabaseHelper helper = DatabaseHelper.getInstance(getActivity());
+				Cursor cursor = helper.getChosenData(id);
 
+				if (!cursor.moveToFirst()) {
+					cursor.moveToFirst();
+				}
+
+ 				firstName.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_FIRST)));
+				lastName.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_LAST)));
+				status.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS)));
+				Integer num = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_NUMBER));
+				number.setText(num.toString());
+				String theHireDate = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_HIRE_DATE));
+
+				// Reformat date
+				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+				String outputDateFormat = pref.getString(PrefFragment.KEY_DISPLAY, DEFAULT_DATE_FORMAT);
+				String inputDateFormat = "yyyy-MM-dd";
+				DateFormat df_input = new SimpleDateFormat(inputDateFormat, Locale.US);
+				DateFormat df_output = new SimpleDateFormat(outputDateFormat, Locale.US);
+				try {
+					hireDate = df_input.parse(theHireDate);
+					String superActualDate = df_output.format(hireDate);
+					hireDateText.setText(superActualDate);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
-
 	}
 
 	// Function to add menu to action bar in fragment
@@ -123,8 +143,8 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			default:
-				if (getView() != null && getContext() != null) {
+			case R.id.menu_save_button:
+				if (getView() != null) {
 					EditText firstName = (EditText)getView().findViewById(R.id.etx_FirstName);
 					EditText lastName = (EditText)getView().findViewById(R.id.etx_LastName);
 					EditText number = (EditText)getView().findViewById(R.id.etx_Number);
@@ -137,17 +157,18 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 						if (hireDate != null) {
 							String theDate = df.format(hireDate);
-							helper.insertNewEmployee(firstName.getText().toString(), lastName.getText().toString(),
-									intNumber, theDate, status.getText().toString());
+							if (id == -1) {
+								helper.insertNewEmployee(firstName.getText().toString(), lastName.getText().toString(),
+										intNumber, theDate, status.getText().toString());
+								Toast.makeText(getActivity(), "Employee added", Toast.LENGTH_SHORT).show();
+							} else {
+								helper.updateEmployee(id, firstName.getText().toString(), lastName.getText().toString(),
+										intNumber, theDate, status.getText().toString());
+								Toast.makeText(getActivity(), "Employee updated", Toast.LENGTH_SHORT).show();
+							}
 						}
 
 						dismissListener.dismissView();
-
-						if (getArguments() != null) {
-							Toast.makeText(getActivity(), "Employee updated", Toast.LENGTH_SHORT).show();
-						} else {
-							Toast.makeText(getActivity(), "Employee added", Toast.LENGTH_SHORT).show();
-						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -161,9 +182,13 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.btn_Date) {
-			long currentDate = System.currentTimeMillis();
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(currentDate);
+
+			if (hireDate == null) {
+				calendar.setTimeInMillis(System.currentTimeMillis());
+			} else {
+				calendar.setTime(hireDate);
+			}
 
 			DatePickerDialog dateDialog = new DatePickerDialog(getContext(), date,
 					calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
@@ -173,25 +198,22 @@ public class ChangeFragment extends Fragment implements View.OnClickListener {
 	}
 
 	// Function change TextView to the chosen date when user dismisses the DatePicker
-	DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+	private final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 		@Override
 		public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 		if (getView() != null) {
-			TextView date = (TextView)getView().findViewById(R.id.txt_Change_Date);
+			TextView date = (TextView) getView().findViewById(R.id.txt_Change_Date);
 			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
 			String dateFormat = pref.getString(PrefFragment.KEY_DISPLAY, DEFAULT_DATE_FORMAT);
-
-			Log.i(TAG, "onDateSet: "+dateFormat);
 
 			Calendar newCalendar = Calendar.getInstance();
 			newCalendar.set(year, month, dayOfMonth);
 
 			hireDate = newCalendar.getTime();
+
 			DateFormat df = new SimpleDateFormat(dateFormat, Locale.US);
-			if (hireDate != null) {
-				String theDate = df.format(hireDate);
-				date.setText(theDate);
-			}
+			String theDate = df.format(hireDate);
+			date.setText(theDate);
 		}
 		}
 	};

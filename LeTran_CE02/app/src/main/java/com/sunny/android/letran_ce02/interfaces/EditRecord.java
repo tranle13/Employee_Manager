@@ -5,6 +5,7 @@
 
 package com.sunny.android.letran_ce02.interfaces;
 
+// Inteface to start activity to ChangeActivity when user wants to edit info
 public interface EditRecord {
-	void toChangeFragment(int id);
+	void toChangeFragment(Integer id);
 }

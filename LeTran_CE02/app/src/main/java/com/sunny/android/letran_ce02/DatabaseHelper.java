@@ -10,20 +10,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-import java.util.ArrayList;
-
-	public class DatabaseHelper extends SQLiteOpenHelper {
-
-		private static final String TAG = "DatabaseHelper";
+public class DatabaseHelper extends SQLiteOpenHelper {
 
 	// Member variables to hold database info
 	private static final String DATABASE_FILENAME = "database.db";
 	private static final int DATABASE_VERSION = 1;
 
-	public static final String TABLE_NAME = "employees";
-	public static final String COLUMN_ID = "_id";
+	private static final String TABLE_NAME = "employees";
+	private static final String COLUMN_ID = "_id";
 	public static final String COLUMN_FIRST = "firstName";
 	public static final String COLUMN_LAST = "lastName";
 	public static final String COLUMN_NUMBER = "number";
@@ -46,8 +41,6 @@ import java.util.ArrayList;
 		if (eInstance == null) {
 			eInstance = new DatabaseHelper(_context);
 		}
-
-		Log.i(TAG, "getInstance: "+eInstance);
 
 		return eInstance;
 	}
@@ -105,7 +98,7 @@ import java.util.ArrayList;
 
 	// Function to update the chosen employee
 	public void updateEmployee(int _id, String firstName, String lastName, int number, String date, String status) {
-		String where = "_id = '" + _id + "'";
+		String where = "_id = " + _id + "";
 		ContentValues changedContent = new ContentValues();
 		changedContent.put(COLUMN_FIRST, firstName);
 		changedContent.put(COLUMN_LAST, lastName);
@@ -116,41 +109,37 @@ import java.util.ArrayList;
 		eDB.update(TABLE_NAME, changedContent, where, null);
 	}
 
-	// Function to get all the id from table
-	public ArrayList<Integer> getAllId() {
-		Cursor c = getAllData();
-		ArrayList<Integer> ids = new ArrayList<>();
-
-		try {
-			while (c.moveToNext()) {
-				ids.add(c.getInt(c.getColumnIndex(COLUMN_ID)));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return ids;
-	}
-
-	public void sortStatus(int which) {
+	// Function to sort status
+	public Cursor sortStatus(int which) {
+		Cursor cursor = null;
 		switch (which) {
 			case 0:
-				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_STATUS+" ASC");
+				cursor = eDB.query(TABLE_NAME, null, null, null, null,
+						null, COLUMN_STATUS+" ASC");
 				break;
 			default:
-				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_STATUS+" DESC");
+				cursor = eDB.query(TABLE_NAME, null, null, null, null,
+						null, COLUMN_STATUS+" DESC");
 				break;
 		}
+
+		return cursor;
 	}
 
-	public void sortNumber(int which) {
+	// Function to sort number
+	public Cursor sortNumber(int which) {
+		Cursor cursor = null;
 		switch (which) {
 			case 0:
-				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_NUMBER+" ASC");
+				cursor = eDB.query(TABLE_NAME, null, null, null, null,
+						null, COLUMN_NUMBER+" ASC");
 				break;
 			default:
-				eDB.query(TABLE_NAME, null, null, null, null, null, COLUMN_NUMBER+" DESC");
+				cursor = eDB.query(TABLE_NAME, null, null, null, null,
+						null, COLUMN_NUMBER+" DESC");
 				break;
 		}
+
+		return cursor;
 	}
 }

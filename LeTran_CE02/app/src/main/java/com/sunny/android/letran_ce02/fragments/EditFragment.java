@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,12 +32,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-	public class EditFragment extends Fragment {
+public class EditFragment extends Fragment {
 
+	// Member variables
 	private static final String KEY_ID  = "KEY_ID";
-
-	private static final String TAG = "EditFragment";
-
 	private Integer id;
 	private DismissActivity dismissInterface;
 	private EditRecord editInterface;
@@ -67,6 +64,7 @@ import java.util.Locale;
 		setHasOptionsMenu(true);
 	}
 
+	// Check if the host activity implements these interfaces
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
@@ -87,6 +85,7 @@ import java.util.Locale;
 		return inflater.inflate(R.layout.edit_fragment, container, false);
 	}
 
+	// Populate data from database to TextViews
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -113,10 +112,10 @@ import java.util.Locale;
 			number.setText(num.toString());
 			String theHireDate = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_HIRE_DATE));
 
-			// Reformat date
+			// Reformat date to the preference format
 			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
 			String outputDateFormat = pref.getString(PrefFragment.KEY_DISPLAY, "MMMM dd, yyyy");
-			String inputDateFormat = "yyyy/MM/dd";
+			String inputDateFormat = "yyyy-MM-dd";
 			DateFormat df_input = new SimpleDateFormat(inputDateFormat, Locale.US);
 			DateFormat df_output = new SimpleDateFormat(outputDateFormat, Locale.US);
 			try {
@@ -126,14 +125,6 @@ import java.util.Locale;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-//			DateFormat format = new SimpleDateFormat(outputDateFormat);
-//			try {
-//				Date newDate = format.parse(theHireDate);
-//				hireDate.setText(format.format(newDate));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
 
 			status.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS)));
 
@@ -159,7 +150,6 @@ import java.util.Locale;
 					DatabaseHelper helper = DatabaseHelper.getInstance(getActivity());
 					helper.deleteEmployee(id);
 					dismissInterface.dismissView();
-
 					Toast.makeText(getActivity(), "Employee deleted", Toast.LENGTH_SHORT).show();
 					break;
 			}

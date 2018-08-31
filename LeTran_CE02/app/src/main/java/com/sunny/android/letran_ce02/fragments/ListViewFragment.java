@@ -20,6 +20,7 @@ import com.sunny.android.letran_ce02.R;
 
 public class ListViewFragment extends ListFragment {
 
+	// Member variable
 	private Cursor eCursor;
 	private TheChosen chosenEmployee;
 
@@ -32,11 +33,11 @@ public class ListViewFragment extends ListFragment {
 		void getChosen(int position);
 	}
 
-	public Cursor getCursor() {
+	private Cursor getCursor() {
 		return eCursor;
 	}
 
-	public void setCursor(Cursor eCursor) {
+	private void setCursor(Cursor eCursor) {
 		this.eCursor = eCursor;
 	}
 
@@ -75,12 +76,14 @@ public class ListViewFragment extends ListFragment {
 		}
 	}
 
+	// Get _id from selected item
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
 		if (chosenEmployee != null) {
-			chosenEmployee.getChosen(position);
+			int _id = (int)id;
+			chosenEmployee.getChosen(_id);
 		}
 	}
 }

@@ -30,7 +30,7 @@
     <string-array name="pref_date_format_values">
         <item>MM/dd/yyyy</item>
         <item>MMMM dd, yyyy</item>
-        <item>MM. dd. yyyy</item>
+        <item>MM.dd.yyyy</item>
     </string-array>
 
     <string name="display_title">Display Reference</string>
